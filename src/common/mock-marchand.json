@@ -1,0 +1,26 @@
+[
+    { 
+        "idmar":"1334",
+        "nom": "a-electronics",
+        "email": "a@email.com",
+        "password":"motdepasse"
+    },
+    { 
+        "idmar":"1345",
+        "nom": "b-electronics",
+        "email": "c@email.com",
+        "password":"motdepasse"
+    },
+    { 
+        "idmar":"1374",
+        "nom": "c-electronics",
+        "email": "c@email.com",
+        "password":"motdepasse"
+    },
+    { 
+        "idmar":"1134",
+        "nom": "d-electronics",
+        "email": "d@email.com",
+        "password":"motdepasse"
+    }
+]
