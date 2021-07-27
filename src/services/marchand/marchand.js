@@ -19,9 +19,9 @@ function save(body, http_response) {
     client.query(query, (err, res) => {
         var status = 'ECHEC';
         if (err) {
-            custom_log('[' + tableName + ']',  'Insert Fail, cause: ' + err);
+            custom_log('[QUERY OUT][' + tableName + ']',  'Insert Fail, cause: ' + err);
         } else {
-            custom_log('[' + tableName + ']', 'Insert at ' + date + ', ' + body.nom +'/' +body.email);
+            custom_log('[QUERY OUT][' + tableName + ']', 'Insert at ' + date + ', ' + body.nom +'/' +body.email);
             statut = 'SUCCES';
         }
         http_response.send({statut: status});
@@ -38,9 +38,9 @@ function findAll(http_response){
     client.query(queryAll, (err, res) => {    
         var marchands = [];
         if (err) {
-            custom_log('[' + tableName + ']',  'Select all Fail cause : ' + err);
+            custom_log('[QUERY OUT][' + tableName + ']',  'Select all Fail cause : ' + err);
         } else { 
-            custom_log('[' + tableName + ']', 'Select at ' + todayWithHours() +', fetch: '+ JSON.stringify(res.rows)); 
+            custom_log('[QUERY OUT][QUERY OUT][' + tableName + ']', 'Select at ' + todayWithHours() +', fetch: '+ JSON.stringify(res.rows)); 
             res.rows.forEach(row => {
                 marchands.push(row);
             });     
@@ -60,9 +60,9 @@ function findById(id, http_response) {
     client.query(query, (err, res) => {
         var val = null;
         if (err) {
-            custom_log('[' + tableName + ']',  'Fail');
+            custom_log('[QUERY OUT][' + tableName + ']',  'Fail');
         } else {
-            custom_log('[' + tableName + ']', 'Select at ' + today() + ', ' +res.rows[0]);
+            custom_log('[QUERY OUT][' + tableName + ']', 'Select at ' + todayWithHours() + ', ' +res.rows[0]);
             val = res.rows[0];
         }
         http_response.send({rechParam: 'ID', value: val});
@@ -80,9 +80,9 @@ function findByOther(search, http_response){
     client.query(query, (err, res) => {    
         var marchands = [];
         if (err) {
-            custom_log('[' + tableName + ']',  'Fail, cause : ' + err);
+            custom_log('[QUERY OUT][' + tableName + ']',  'Fail, cause : ' + err);
         } else {
-            custom_log('[' + tableName + ']', 'Select at ' + today() + ', fetch' + body.nom +'/' + body.email);
+            custom_log('[QUERY OUT][' + tableName + ']', 'Select at ' + today() + ', fetch' + body.nom +'/' + body.email);
             res.rows.forEach(row => {
                 marchands.push(row);
             });

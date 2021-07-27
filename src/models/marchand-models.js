@@ -9,9 +9,9 @@ function marchandData(id, body) {
     };
 }
 
-function input(r) {
+function input(body) {
     return {
-        idmar: body.idmar, //to generate
+        idmar: body.idmar,
         nom: body.nom,
         email: body.email,
         password: body.password,

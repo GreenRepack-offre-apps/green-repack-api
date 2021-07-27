@@ -10,9 +10,9 @@ var client = new Pool({
 var err_connnection = false;
 
 client.connect()
-    .then(r => console.log('DATABASE IS CONNECTED !!'))
+    .then(r => console.log('[DATABASE] => IS CONNECTED !!'))
     .catch(err => {
-        console.log('DATABASE NOT CONNECTED !!, Cause: '+ err);
+        console.log('[DATABASE] => NOT CONNECTED !!, Cause: '+ err);
         err_connnection = true;
     });
 
