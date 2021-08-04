@@ -1,10 +1,9 @@
 var express = require('express');
-const { save, findAll, findById } = require('../../services/marchand/marchand');
-const { auth } = require('../../services/authent');
+const { save, findAll, findById, findByAnyParam } = require('../../services/marchand/marchand');
 var route = express.Router();
 
 
-route.get('/list', auth, (req, res) => {
+route.get('/list', (req, res) => {
     console.log('[API][Marchand] => fetch all marchands !');
     findAll(res);
 });
@@ -25,6 +24,21 @@ route.param('idmar', function(req, res, next, val) {
 route.get('/get/:idmar', (req, res) => {
     console.log('[API][Marchand] => fetch marchand by id : ' + idMarchand);
     findById(idMarchand,res);
+});
+
+route.get('/get', (req, res) => {
+    console.log('[API][Marchand] => fetch marchand by param : ' + JSON.stringify(req.query));
+    if(req.query.email){
+        findByAnyParam('email', req.query.email, res);
+    }else if(req.query.id) {
+        findByAnyParam('idmar', req.query.id, res);
+    }else if(req.query.adresse) {
+        findByAnyParam('adresse' ,req.query.adresse, res);
+    }else if(req.query.datecreation) {
+        findByAnyParam('datecreation', req.query.datecreation, res);
+    }else if(req.query.nom){
+        findByAnyParam('nom',req.query.nom, res);
+    }
 });
 
 module.exports = route;
