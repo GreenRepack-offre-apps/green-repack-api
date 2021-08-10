@@ -20,6 +20,9 @@ app.get('/', (req, res) => {
 var marchanRoute = require('./src/routes/marchand/marchand');
 app.use('/api'+ local_config.routes.marchand, marchanRoute);
 
+var produitRoute = require('./src/routes/produit/produit');
+app.use('/api'+ local_config.routes.produit, produitRoute);
+
 app.listen(port, () => {
     console.log('[API] => Green-Repack app listening at http://localhost:'.concat(port));
 });
