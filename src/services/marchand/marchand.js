@@ -1,30 +1,31 @@
 const { query, json } = require("express");
 const { today, db_config, todayWithHours } = require("../../common/utils");
 const { custom_log } = require("../../common/log");
-const { marchandData } = require("../../models/marchand-models");
 var {client, err_connnection}= require("../db");
 
 var tableName = db_config.tables.marchand;
 
 //ex: VALUES ('e-electronics', 'e@email.com', 'motdepasse', '2021-07-24')
 function save(body, http_response) {
+    
+    var status = 'ECHEC';
     if (err_connnection) {
-        http_response.send({statut:'ECHEC'});
+        http_response.send({status:status});
     }
     date = today();
     var query = {
-        text: 'INSERT INTO '+ tableName + '(nom, email, password, adresse, datecreation) VALUES($1, $2, $3, $4, $5)',
-        values: [body.nom, body.email, body.password, body.adresse, date],
+        text: 'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation) VALUES($1, $2, $3, $4)',
+        values: [body.nom, body.email, body.adresse, date],
     };
     client.query(query, (err, res) => {
-        var status = 'ECHEC';
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Insert Fail, cause: ' + err);
         } else {
             custom_log('[QUERY OUT][' + tableName + ']', 'Insert at ' + date + ', ' + body.nom +'/' +body.email);
-            statut = 'SUCCES';
+            status = 'SUCCES';
         }
-        http_response.send({statut: status});
+        http_response.send({status: status});
+        
       });
 }
 
@@ -69,6 +70,27 @@ function findById(id, http_response) {
     });
 }
 
+function findByAnyParam(param, value, http_response) {
+    if (err_connnection) {
+        http_response.send({rechParam: param, value:null});
+    }
+    var query = {
+        text: 'SELECT * FROM public.'+ tableName + ' WHERE '+param+' = $1',
+        values: [value]
+    };
+    custom_log('[QUERY][' + tableName + ']', query.text);
+    client.query(query, (err, res) => {
+        var val = null;
+        if (err) {
+            custom_log('[QUERY OUT][' + tableName + ']',  'Fail, cause: '+ err);
+        } else {
+            custom_log('[QUERY OUT][' + tableName + ']', 'Select at ' + todayWithHours() + ', ' +JSON.stringify(res.rows));
+            val = res.rows[0];
+        }
+        http_response.send({rechParam: param, value: val});
+    });
+}
+
 function findByOther(search, http_response){
     if (err_connnection) {
         http_response.send({data: []});
@@ -96,6 +118,7 @@ module.exports = {
     save,
     findAll,
     findById,
+    findByAnyParam,
     findByOther
 };
 
