@@ -1,12 +1,10 @@
 var express = require('express');
 const { save, find, findAll } = require('../../services/association/association');
 var route = express.Router();
-const API_RNA_ASSOS = 'https://entreprise.data.gouv.fr';
-
 var request = require('request');
 
+const API_RNA_ASSOS = 'https://entreprise.data.gouv.fr';
 
-var assosRnaFound = null;
 function isRnaPublicDatabase(reqBody, res) {
    
     var path = API_RNA_ASSOS + '/api/rna/v1/id/' + reqBody.rna;
@@ -47,7 +45,6 @@ function isRnaPublicDatabase(reqBody, res) {
 
 route.post('/create', (req, res) => {
     console.log('[API][ASSOCIATION] => creating ASSOS account...');
-    association = {};
     if(req.body.rna){
         isRnaPublicDatabase(req.body, res);
     }
@@ -55,14 +52,11 @@ route.post('/create', (req, res) => {
 
 route.get('/list', (req, res) => {
     console.log('[API][ASSOCIATION] => get all ASSOS...');
-    association = {};
     findAll(res);
-
 });
 
 route.get('/get', (req, res) => {
-    console.log('[API][ASSOCIATION] => get assos ASSOS...');
-    association = {};
+    console.log('[API][ASSOCIATION] => get one assos ...');
     if(req.query.rna){
         find(req.query.rna, 'rna_id', res);
     }else if(req.query.email) {
@@ -73,6 +67,5 @@ route.get('/get', (req, res) => {
         find(req.query.id, 'idassos', res);
     }
 });
-
 
 module.exports = route;
