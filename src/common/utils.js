@@ -6,13 +6,15 @@ var GLOBAL_ROUTES = {
     marchand: '/marchand',
     client:'/client',
     produit:'/produit',
-    commande:'/commande'
+    commande:'/commande',
+    association: '/association'
 };
 var DB_TABLE = {
     marchand: 'marchand',
     client:'client',
     produit:'produit',
-    commande:'commande'
+    commande:'commande',
+    association:'association'
 }
 
 
