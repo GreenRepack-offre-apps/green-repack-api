@@ -10,6 +10,8 @@ function saveProduct(body, http_response) {
     var status = 'ECHEC';
     if (err_connnection) {
         http_response.send({status:status, id:idprod});
+    }else if(!body.user_email || body.user_email == null) {
+        http_response.send({status:status, id:idprod});
     }
     
     tableNameRef = db_config.tables.marchand;
@@ -45,7 +47,7 @@ function selectProducts(email, etat_dem, http_response) {
         http_response.send({status:status, data:data});
     }
 
-    tableNameRef = db_config.tables.marchand;
+    const tableNameRef = db_config.tables.marchand;
     var queryProduct = null;
     if(etat_dem) {
         queryProduct = {
@@ -58,13 +60,13 @@ function selectProducts(email, etat_dem, http_response) {
             values: [email]
         };
     }
-    
-    custom_log('[QUERY]', queryUser.text);
+    var date = today();
+    custom_log('[QUERY]', queryProduct.text);
     client.query(queryProduct, (err, res) => {
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Select Fail, cause: ' + err);
         } else {
-            custom_log('[QUERY OUT][' + tableName + ']', '  Select at ' + date + ', ' + body.user_email+'/'+res.rows);
+            custom_log('[QUERY OUT][' + tableName + ']', '  Select at ' + date + ', result: ' +JSON.stringify( res.rows));
             console.log('marchand id '+ JSON.stringify(res.rows));
             res.rows.forEach( r => data.push(r));
             status = 'SUCCES';
@@ -89,17 +91,19 @@ function updateProductState(body, http_response){
         // 2 - // cas Etat: ACCEPTE_GES_1 => action: gestion, paiement du produit à l'utilisateur auto ou manuelle => STATE = EN_ATTENTE_PAIEMENT => VALIDER
         // 3 - // cas Etat: OFFRE_2 => action: gestion, proposer un nouveux prix, avec la raison du changement (optionnel)
     // action: marchand, cas Etat: OFFRE_2 => accepter/refuser => STATE = ACCEPTE_MAR_2 => EN_ATTENTE_PAIEMENT => VALIDER / STATE = ANNULER_MAR_2 => EN_ATTENTE_REMBOURSEMENT => CLOTURER;
+    const tableNameRef = db_config.tables.marchand;
     var query = {
         text: 'UPDATE '+ tableName + ' SET statut_validation = $1 WHERE idprod = $2 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $3) AND statut_validation = $4',
         values: [body.etat_dem_next, body.idproduit, body.email_user, body.etat_dem_now]
     };
-    custom_log('[QUERY]', queryUser.text);
-
+    custom_log('[QUERY]', query.text);
+    var date = today();
     client.query(query, (err, res) => {
         if (err) {
-            custom_log('[QUERY OUT][' + tableName + ']',  'Select Fail, cause: ' + err);
+            custom_log('[QUERY OUT][' + tableName + ']',  'Update Fail, cause: ' + err);
+            status = 'ECHEC';
         } else {
-            custom_log('[QUERY OUT][' + tableName + ']', '  Select at ' + date + ', ' + body.user_email+'/'+res.rows);
+            custom_log('[QUERY OUT][' + tableName + ']', '  Update at ' + date + ', ' + body.email_user+'/'+res.rows);
             status = 'SUCCES';
         }
         http_response.send({status:status});
