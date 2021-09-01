@@ -1,7 +1,7 @@
 # green-repack-api
 
 ## Run app:
-- 'npm run nodemon' (éxécution unique tous en modifant du code) 
+- 'npm run demon' (éxécution unique tous en modifant du code) 
 - Ou 'npm start' (éxécution sans modificatiuon de code, si modification relancer la commande)
 
 

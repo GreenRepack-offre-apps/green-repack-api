@@ -19,7 +19,7 @@ var DB_TABLE = {
 
 
 function todayWithHours() {
-    return dateFormat(new Date(), "yyyy-mm-dd h:MM:ss");
+    return dateFormat(new Date(), "yyyy-mm-dd HH:MM:ss");
 }
 
 function today() {
