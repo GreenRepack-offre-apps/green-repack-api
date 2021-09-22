@@ -43,6 +43,42 @@ function saveProduct(body, http_response) {
     });   
 }
 
+function selectAllProducts(etat_dem, http_response) {
+    var data = [];
+    var status = 'ECHEC';
+    if (err_connnection) {
+        http_response.send({status:status, data:data});
+    }
+    if(etat_dem) {
+        queryProduct = {
+            text: 'SELECT idprod, refmar, date_ajout, date_fin, date_fin, statut_validation, marque, model,'
+            +' categorie, info_tech,info_esth, prix, email AS user FROM '+ tableName + ', '+ db_config.tables.marchand+' WHERE refmar = idmar AND statut_validation = $1 ORDER BY date_fin',
+            values: [etat_dem]
+        };
+    } else { 
+        queryProduct = {
+            text: 'SELECT idprod, refmar, date_ajout, date_fin, date_fin, statut_validation, marque, model,'
+            +' categorie, info_tech,info_esth, prix, email AS user FROM '+ tableName + ',' + db_config.tables.marchand + ' WHERE refmar = idmar ORDER BY date_fin',
+        };
+    }
+
+    var date = today();
+    custom_log('[QUERY]', queryProduct.text);
+    client.query(queryProduct, (err, res) => {
+        if (err) {
+            custom_log('[QUERY OUT][' + tableName + ']',  'Select Fail, cause: ' + err);
+        } else {
+            custom_log('[QUERY OUT][' + tableName + ']', '  Select at ' + date + ', result: ' +JSON.stringify(res.rows));
+            console.log('marchand id '+ JSON.stringify(res.rows));
+            res.rows.forEach( r => {
+                data.push(r);
+            });
+            status = 'SUCCES';
+        }
+        http_response.send({status:status, data:data});
+      });
+}
+
 function selectProducts(email, etat_dem, http_response) {
     var data = [];
     var status = 'ECHEC';
@@ -109,17 +145,17 @@ function updateProductState(body, http_response){
     if (err_connnection) {
         http_response.send({status:status});
     }
-
+    dateHour = todayWithHours();
     const tableNameRef = db_config.tables.marchand;
     if(body.prix != 0){
         var query = {
             text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, prix = $3 WHERE idprod = $4 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $5) AND statut_validation = $6',
-            values: [body.etat_dem_next, body.date_modif, body.prix, body.idproduit, body.email_user, body.etat_dem_now]
+            values: [body.etat_dem_next, dateHour, body.prix, body.idproduit, body.email_user, body.etat_dem_now]
         };
     }else{
         var query = {
             text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, WHERE idprod = $3 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $4) AND statut_validation = $4',
-            values: [body.etat_dem_next,  body.date_modif, body.idproduit, body.email_user, body.etat_dem_now]
+            values: [body.etat_dem_next,  dateHour, body.idproduit, body.email_user, body.etat_dem_now]
         };
     }
 
@@ -138,4 +174,4 @@ function updateProductState(body, http_response){
 
 }
 
-module.exports = {saveProduct, selectProducts, selectOneProduct, updateProductState};
+module.exports = {saveProduct, selectProducts, selectAllProducts, selectOneProduct, updateProductState};

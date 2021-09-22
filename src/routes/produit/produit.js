@@ -1,5 +1,5 @@
 var express = require('express');
-const { selectProducts, saveProduct, updateProductState, selectOneProduct } = require('../../services/produit/produit');
+const { selectProducts, selectAllProducts, saveProduct, updateProductState, selectOneProduct } = require('../../services/produit/produit');
 var route = express.Router();
 
 
@@ -8,6 +8,14 @@ route.post('/add', (req, res) => {
 });
 
 route.get('/list', (req, res) => {
+    if(req.query.etat_dem){
+        selectAllProducts(req.query.etat_dem, res);
+    }else{
+        selectAllProducts(null, res);
+    }
+});
+
+route.get('/user/list', (req, res) => {
     if(req.query.email_user){
         if(req.query.etat_dem){
             selectProducts(req.query.email_user, req.query.etat_dem, res);
@@ -16,6 +24,9 @@ route.get('/list', (req, res) => {
         }
     }
 });
+
+
+
 route.get('/get', (req, res) => {
     if(req.query.idprod){
         selectOneProduct(req.query.idprod, res);
