@@ -90,12 +90,12 @@ function selectProducts(email, etat_dem, http_response) {
     var queryProduct = null;
     if(etat_dem) {
         queryProduct = {
-            text: 'SELECT * FROM '+ tableName + ' WHERE refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $1) AND statut_validation = $2',
+            text: 'SELECT * FROM '+ tableName + ' WHERE refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $1) AND statut_validation = $2 ORDER BY date_fin',
             values: [email, etat_dem]
         };
     } else { 
         queryProduct = {
-            text: 'SELECT * FROM '+ tableName + ' WHERE refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $1)',
+            text: 'SELECT * FROM '+ tableName + ' WHERE refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $1 ORDER BY date_fin)',
             values: [email]
         };
     }
@@ -149,12 +149,12 @@ function updateProductState(body, http_response){
     const tableNameRef = db_config.tables.marchand;
     if(body.prix != 0){
         var query = {
-            text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, prix = $3 WHERE idprod = $4 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $5) AND statut_validation = $6',
+            text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, prix = $3, ex_state = $6 WHERE idprod = $4 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $5) AND statut_validation = $6',
             values: [body.etat_dem_next, dateHour, body.prix, body.idproduit, body.email_user, body.etat_dem_now]
         };
     }else{
         var query = {
-            text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, WHERE idprod = $3 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $4) AND statut_validation = $4',
+            text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, ex_state = $4 WHERE idprod = $3 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $4) AND statut_validation = $4',
             values: [body.etat_dem_next,  dateHour, body.idproduit, body.email_user, body.etat_dem_now]
         };
     }

@@ -14,26 +14,65 @@ function save(body, http_response) {
     }
     date = today();
     var query = {
-        text: 'INSERT INTO '+ tableName + '(rna_id, email_compte, datecreation_compte, nom) VALUES($1, $2, $3, $4)',
-        values: [body.rna, body.emailCompte, date, body.nom],
+        text: 'INSERT INTO '+ tableName + '(rna_id, datecreation_compte, password) VALUES($1, $2)',
+        values: [body.rna, date, body.password]
     };
     client.query(query, (err, res) => {
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Insert Fail, cause: ' + err);
-            if(err.message.includes('email_compte_uniq_constr') || err.message.includes('rna_id_uniq_constr')){
+            if(err.message.includes('rna_id_uniq_constr') || err.message.includes('rna_id_uniq_constr')){
                 status = 'EXIST';
             }
         } else {
             custom_log('[QUERY OUT][' + tableName + ']', 'Insert at ' + date + ', ' + body.nom +'/' + body.emailCompte);
             status = 'SUCCES';
-            data = body;
+        }
+        http_response.send({status: status}); 
+      });
+}
+
+function valid(body, info, http_response){
+    var data = null;
+    var status = 'ECHEC';
+    if (err_connnection) {
+        http_response.send({status:status, data: data});
+    }
+    if(info == null){
+        status = 'ECHEC_RNA';
+        http_response.send({status:status, data: data});
+    }
+    date = today();
+    var query = {
+        text: 'SELECT * FROM '+ tableName + ' WHERE rna_id = $1 AND password = $2',
+        values: [body.rna, body.password],
+    };
+    client.query(query, (err, res) => {
+        if (err) {
+            custom_log('[QUERY OUT][' + tableName + ']',  'Select Fail, cause: ' + err);
+            status = 'ECHEC_RNA_PSWD';
+        } else {
+            custom_log('[QUERY OUT][' + tableName + ']', 'Select at ' + date + ', returning ' + JSON.stringify(res.rows[0]));
+            if(body.rna !=  res.rows[0].rna_id || body.password != res.rows[0].password){
+                
+                
+            http_response.send({status: status, data: data});
+            }
+            data = {
+                result: {
+                    idassos: res.rows[0].idassos,
+                    rnaId: res.rows[0].rna_id,
+                    datecreation: res.rows[0].datecreation_compte
+                },
+                info: info,
+            };
+            status = 'SUCCES';
         }
         http_response.send({status: status, data: data});
         
       });
 }
 
-function find(paramvalue, paramkey, http_response) {
+function find(paramvalue, paramkey, info, http_response) {
     var data = null;
     var status = 'ECHEC';
     if (err_connnection) {
@@ -41,7 +80,7 @@ function find(paramvalue, paramkey, http_response) {
     }
     date = today();
     var query = {
-        text: 'SELECT * FROM '+ tableName + ' WHERE '+paramkey+' = $1',
+        text: 'SELECT idassos, rna_id, datecreation_compte FROM '+ tableName + ' WHERE '+paramkey+' = $1',
         values: [paramvalue],
     };
     client.query(query, (err, res) => {
@@ -49,7 +88,14 @@ function find(paramvalue, paramkey, http_response) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Select Fail, cause: ' + err);
         } else {
             custom_log('[QUERY OUT][' + tableName + ']', 'Select at ' + date + ', returning ' + JSON.stringify(res.rows[0]));
-            data = res.rows[0];
+            data = {
+                result:{
+                    idassos: res.rows[0].idassos,
+                    rnaId: res.rows[0].rna_id,
+                    datecreation: res.rows[0].datecreation_compte
+                },
+                info: info,
+            };
             status = 'SUCCES';
         }
         http_response.send({status: status, data: data});
@@ -66,7 +112,7 @@ function findAll(http_response) {
 
     date = today();
     var query = {
-        text: 'SELECT * FROM '+ tableName,
+        text: 'SELECT idassos, rna_id as rnaId, datecreation_compte as datecreation FROM '+ tableName,
     };
     client.query(query, (err, res) => {
         if (err) {
@@ -76,9 +122,9 @@ function findAll(http_response) {
             res.rows.forEach(r => data.push(r));
             status = 'SUCCES';
         }
-        http_response.send({status: status, data: data, });
+        http_response.send({status: status, data: data});
         
       });
 }
 
-module.exports = {save, find, findAll}
+module.exports = {save, valid, find, findAll}
