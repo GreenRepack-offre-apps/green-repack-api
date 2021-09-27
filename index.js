@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser());
 
-var port = process.env.PORT | 3000;
+const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
     res.send({app:{name:local_config.app}});
