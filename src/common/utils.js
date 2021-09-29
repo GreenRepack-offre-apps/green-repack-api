@@ -9,13 +9,15 @@ var GLOBAL_ROUTES = {
     commande:'/commande',
     association: '/association'
 };
+
 var DB_TABLE = {
     marchand: 'marchand',
     client:'client',
     produit:'produit',
     commande:'commande',
-    association:'association'
-}
+    association:'association',
+    projets:'projets'
+};
 
 
 function todayWithHours() {
@@ -38,4 +40,4 @@ module.exports = {
     },
     today,
     todayWithHours
-}
+};
