@@ -23,7 +23,7 @@ function add(body, rna_exist, http_response) {
     client.query(query, (err, res) => {
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Insert Fail, cause: ' + err);
-            if(err.message.includes('assos_rna_id_uniq_constr')){
+            if(err.message.includes('assos_rna_id_uniq_constr')) {
                 status = 'EXIST';
             }
         } else {
