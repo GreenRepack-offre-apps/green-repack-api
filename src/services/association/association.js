@@ -5,26 +5,27 @@ var {client, err_connnection}= require("../db");
 
 var tableName = db_config.tables.association;
 
-//ex: VALUES ('e-electronics', 'e@email.com', 'motdepasse', '2021-07-24')
-function save(body, http_response) {
+function save(body, rna_exist, http_response) {
     var data = null;
     var status = 'ECHEC';
     if (err_connnection) {
         http_response.send({status:status});
+    }else if(rna_exist == false){
+        res.send({status:'ECHEC_RNA'});
     }
     date = today();
     var query = {
-        text: 'INSERT INTO '+ tableName + '(rna_id, datecreation_compte, password) VALUES($1, $2)',
+        text: 'INSERT INTO '+ tableName + '(rna_id, datecreation_compte, password) VALUES($1, $2, $3)',
         values: [body.rna, date, body.password]
     };
     client.query(query, (err, res) => {
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Insert Fail, cause: ' + err);
-            if(err.message.includes('rna_id_uniq_constr') || err.message.includes('rna_id_uniq_constr')){
+            if(err.message.includes('assos_rna_id_uniq_constr')){
                 status = 'EXIST';
             }
         } else {
-            custom_log('[QUERY OUT][' + tableName + ']', 'Insert at ' + date + ', ' + body.nom +'/' + body.emailCompte);
+            custom_log('[QUERY OUT][' + tableName + ']', 'Insert at ' + date + ', ' + body.rna);
             status = 'SUCCES';
         }
         http_response.send({status: status}); 
@@ -37,26 +38,21 @@ function valid(body, info, http_response){
     if (err_connnection) {
         http_response.send({status:status, data: data});
     }
-    if(info == null){
-        status = 'ECHEC_RNA';
-        http_response.send({status:status, data: data});
-    }
+   
     date = today();
     var query = {
         text: 'SELECT * FROM '+ tableName + ' WHERE rna_id = $1 AND password = $2',
         values: [body.rna, body.password],
     };
     client.query(query, (err, res) => {
-        if (err) {
+        if(info == null){
+            status = 'ECHEC_RNA';
+        }
+        else if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Select Fail, cause: ' + err);
             status = 'ECHEC_RNA_PSWD';
         } else {
             custom_log('[QUERY OUT][' + tableName + ']', 'Select at ' + date + ', returning ' + JSON.stringify(res.rows[0]));
-            if(body.rna !=  res.rows[0].rna_id || body.password != res.rows[0].password){
-                
-                
-            http_response.send({status: status, data: data});
-            }
             data = {
                 result: {
                     idassos: res.rows[0].idassos,
@@ -68,7 +64,6 @@ function valid(body, info, http_response){
             status = 'SUCCES';
         }
         http_response.send({status: status, data: data});
-        
       });
 }
 
@@ -76,7 +71,11 @@ function find(paramvalue, paramkey, info, http_response) {
     var data = null;
     var status = 'ECHEC';
     if (err_connnection) {
-        http_response.send({status:status});
+        http_response.send({status:status, data: data});
+        return;
+    }else if(paramkey == null && paramvalue == null && info == null){
+        http_response.send({status:status, data: data});
+        return;
     }
     date = today();
     var query = {
