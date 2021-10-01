@@ -5,7 +5,7 @@ var {client, err_connnection}= require("../db");
 
 var tableName = db_config.tables.association;
 
-function save(body, rna_exist, http_response) {
+function save(body, nomAssos, rna_exist, http_response) {
     var data = null;
     var status = 'ECHEC';
     if (err_connnection) {
@@ -15,8 +15,8 @@ function save(body, rna_exist, http_response) {
     }
     date = today();
     var query = {
-        text: 'INSERT INTO '+ tableName + '(rna_id, datecreation_compte, password) VALUES($1, $2, $3)',
-        values: [body.rna, date, body.password]
+        text: 'INSERT INTO '+ tableName + '(rna_id, datecreation_compte, password, nom) VALUES($1, $2, $3, $4)',
+        values: [body.rna, date, body.password, nomAssos]
     };
     client.query(query, (err, res) => {
         if (err) {
