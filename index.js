@@ -25,6 +25,9 @@ app.get('/', (req, res) => {
 var marchanRoute = require('./src/routes/marchand/marchand');
 app.use('/api'+ local_config.routes.marchand, marchanRoute);
 
+var clientRoute = require('./src/routes/client/client');
+app.use('/api'+ local_config.routes.client, clientRoute);
+
 var produitRoute = require('./src/routes/produit/produit');
 app.use('/api'+ local_config.routes.produit, produitRoute);
 

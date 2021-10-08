@@ -95,7 +95,7 @@ function findAssosProjects(refIdassos, refRna, statut, http_response) {
       });
 }
 
-function getAll(withattente){
+function getAll(withattente, http_response){
     var data = [];
     var status = 'ECHEC';
     if (err_connnection) {
@@ -125,7 +125,7 @@ function getAll(withattente){
                 data.push({
                     idassos:r.idassos,
                     nom: r.nom,
-                    projets:{
+                    projet:{
                         idproj: r.idproj,
                         refassos: r.refassos,
                         titre: r.titre,
@@ -153,13 +153,13 @@ function update(projetBody, withattente, http_response) {
 
     if(withattente) {
         var query = {
-            text: 'UPDATE '+ tableName + 'SET statut=$1, datevalid=$2 WHERE idproj=$3',
-            values: [projetBody.statut, date, projetBody.idproj]
+            text: 'UPDATE '+ tableName + 'SET statut=$1, datevalid=$2 WHERE idproj=$3 AND refassos=$4',
+            values: [projetBody.statut, date, projetBody.idproj, projetBody.refassos]
         };
     }else{
         var query = {
-            text: 'UPDATE '+ tableName + 'SET argentcollect=$1 WHERE idproj= $2',
-            values: [projetBody.argentcollect, projetBody.idproj]
+            text: 'UPDATE '+ tableName + 'SET argentcollect=$1 WHERE idproj= $2 AND refassos=$3',
+            values: [projetBody.argentcollect, projetBody.idproj, projetBody.refassos]
         };
     }
 

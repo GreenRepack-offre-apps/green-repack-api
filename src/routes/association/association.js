@@ -48,7 +48,7 @@ route.get('/projets/list', (req, res) => {
 
 route.get('/projets/all', (req, res) => {
     console.log('[API][PROJET] => get all ...');
-    getAll(req.query.withattente=='1'?true:false);
+    getAll(req.query.withattente=='1'?true:false, res);
 });
 
 route.delete('/projets/remove', (req, res) => {
@@ -68,7 +68,7 @@ route.post('/projets/add', (req, res) => {
 
 route.post('/projets/update/waiting', (req, res) => {
     
-    console.log('[API][PROJET] => update one waitong...');
+    console.log('[API][PROJET] => update one waiting...');
     if(req.body) {
         update(req.body, true, res);
     }
