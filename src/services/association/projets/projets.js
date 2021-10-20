@@ -40,14 +40,14 @@ function remove(idprj, http_response) {
     }
     date = todayWithHours();
     var query = {
-        text: 'DELETE FROM '+ tableName + ' WHERE idproj= $1',
+        text: 'DELETE FROM '+ tableName + ' WHERE idproj = $1',
         values: [idprj]
     };
     client.query(query, (err, res) => {
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Delete Fail, cause: ' + err);
         } else {
-            custom_log('[QUERY OUT][' + tableName + ']', 'Delete at ' + date + ', ' + body.refassos);
+            custom_log('[QUERY OUT][' + tableName + ']', 'Delete at ' + date + ', ' +idprj);
             status = 'SUCCES';
         }
         http_response.send({status: status}); 
@@ -153,21 +153,21 @@ function update(projetBody, withattente, http_response) {
 
     if(withattente) {
         var query = {
-            text: 'UPDATE '+ tableName + 'SET statut=$1, datevalid=$2 WHERE idproj=$3 AND refassos=$4',
+            text: 'UPDATE '+ tableName + ' SET statut = $1, datevalid = $2 WHERE idproj = $3 AND refassos = $4',
             values: [projetBody.statut, date, projetBody.idproj, projetBody.refassos]
         };
     }else{
         var query = {
-            text: 'UPDATE '+ tableName + 'SET argentcollect=$1 WHERE idproj= $2 AND refassos=$3',
+            text: 'UPDATE '+ tableName + ' SET argentcollect = $1 WHERE idproj = $2 AND refassos = $3',
             values: [projetBody.argentcollect, projetBody.idproj, projetBody.refassos]
         };
     }
-
+    custom_log('[QUERY]',JSON.stringify(query));
     client.query(query, (err, res) => {
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Update Fail, cause: ' + err);
         } else {
-            custom_log('[QUERY OUT][' + tableName + ']', 'Update at ' + date + ', ' + body.refassos);
+            custom_log('[QUERY OUT][' + tableName + ']', 'Update at ' + date + ', ' + projetBody.refassos);
             status = 'SUCCES';
         }
         http_response.send({status: status}); 

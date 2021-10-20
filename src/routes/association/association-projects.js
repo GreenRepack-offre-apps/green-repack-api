@@ -51,7 +51,7 @@ route.get('/projets/all', (req, res) => {
     getAll(req.query.withattente=='1'?true:false, res);
 });
 
-route.delete('/projets/remove', (req, res) => {
+route.get('/projets/remove', (req, res) => {
     console.log('[API][PROJET] => remove one ...');
     if(req.query.idproj) {
         remove(req.query.idproj, res);
@@ -67,7 +67,6 @@ route.post('/projets/add', (req, res) => {
 });
 
 route.post('/projets/update/waiting', (req, res) => {
-    
     console.log('[API][PROJET] => update one waiting...');
     if(req.body) {
         update(req.body, true, res);
@@ -75,7 +74,6 @@ route.post('/projets/update/waiting', (req, res) => {
 });
 
 route.post('/projets/update/verified', (req, res) => {
-    
     console.log('[API][PROJET] => update one verified ok...');
     if(req.body) {
         update(req.body, false, res);

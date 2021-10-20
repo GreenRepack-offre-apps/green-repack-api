@@ -2,6 +2,7 @@ const { query, json } = require("express");
 const { today, db_config, todayWithHours } = require("../../common/utils");
 const { custom_log } = require("../../common/log");
 var {client, err_connnection}= require("../db");
+const { default: DateDiff } = require("date-diff");
 
 tableName = db_config.tables.produit;
 
@@ -71,7 +72,10 @@ function selectAllProducts(etat_dem, http_response) {
             custom_log('[QUERY OUT][' + tableName + ']', '  Select at ' + date + ', result: ' +JSON.stringify(res.rows));
             console.log('marchand id '+ JSON.stringify(res.rows));
             res.rows.forEach( r => {
-                data.push(r);
+                var diff =  r.date_fin?new DateDiff(new Date(), r.date_fin).days():null;
+                //r['delais'] = diff.days();
+                Object.assign(r, {delais: 15 - (Math.ceil(diff)-1)});
+                data.push(r);     
             });
             status = 'SUCCES';
         }
@@ -105,9 +109,14 @@ function selectProducts(email, etat_dem, http_response) {
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Select Fail, cause: ' + err);
         } else {
-            custom_log('[QUERY OUT][' + tableName + ']', '  Select at ' + date + ', result: ' +JSON.stringify( res.rows));
+            custom_log('[QUERY OUT][' + tableName + ']', '  Select at ' + date + ', result: ' +JSON.stringify(res.rows));
             console.log('marchand id '+ JSON.stringify(res.rows));
-            res.rows.forEach( r => data.push(r));
+            res.rows.forEach( r => {
+                var diff =  r.date_fin?new DateDiff(new Date(), r.date_fin).days():null;
+                //r['delais'] = diff.days();
+                Object.assign(r, {delais: 15 - (Math.ceil(diff)-1)});
+                data.push(r);
+            });
             status = 'SUCCES';
         }
         http_response.send({status:status, data:data});
@@ -147,26 +156,26 @@ function updateProductState(body, http_response){
     }
     dateHour = todayWithHours();
     const tableNameRef = db_config.tables.marchand;
-    if(body.prix != 0){
-        var query = {
-            text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, prix = $3, ex_state = $6 WHERE idprod = $4 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $5) AND statut_validation = $6',
-            values: [body.etat_dem_next, dateHour, body.prix, body.idproduit, body.email_user, body.etat_dem_now]
+    var query = {};
+    if(body.prix){
+        query = {
+            text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, prix = $3, ex_state = $5 WHERE idprod = $4 AND statut_validation = $5',
+            values: [body.etat_dem_next, dateHour, body.prix, body.idproduit, body.etat_dem_now]
         };
     }else{
-        var query = {
-            text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, ex_state = $4 WHERE idprod = $3 AND refmar = (SELECT idmar FROM '+tableNameRef +' WHERE email = $4) AND statut_validation = $4',
-            values: [body.etat_dem_next,  dateHour, body.idproduit, body.email_user, body.etat_dem_now]
+        query = {
+            text: 'UPDATE '+ tableName + ' SET statut_validation = $1, date_fin = $2, ex_state = $4 WHERE idprod = $3 AND statut_validation = $4',
+            values: [body.etat_dem_next,  dateHour, body.idproduit, body.etat_dem_now]
         };
     }
 
     custom_log('[QUERY]', query.text);
-    var date = today();
     client.query(query, (err, res) => {
         if (err) {
             custom_log('[QUERY OUT][' + tableName + ']',  'Update Fail, cause: ' + err);
             status = 'ECHEC';
         } else {
-            custom_log('[QUERY OUT][' + tableName + ']', '  Update at ' + date + ', ' + body.email_user+'/'+res.rows);
+            custom_log('[QUERY OUT][' + tableName + ']', '  Update at ' + dateHour);
             status = 'SUCCES';
         }
         http_response.send({status:status});
