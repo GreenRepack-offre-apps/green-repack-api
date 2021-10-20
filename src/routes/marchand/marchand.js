@@ -1,5 +1,5 @@
 var express = require('express');
-const { save, findAll, findById, findByAnyParam } = require('../../services/marchand/marchand');
+const { save, findAll, findById, findByAnyParam, update } = require('../../services/marchand/marchand');
 var route = express.Router();
 
 
@@ -11,6 +11,10 @@ route.get('/list', (req, res) => {
 route.post('/create', (req, res) => {
     console.log('[API][Marchand] => creating a marchand Info');
     save(req.body, res);
+});
+route.post('/update', (req, res) => {
+    console.log('[API][Marchand] => updating  marchand ');
+    update(req.body, res);
 });
 
 var idMarchand = null;

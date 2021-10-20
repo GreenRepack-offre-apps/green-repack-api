@@ -14,8 +14,8 @@ function save(body, http_response) {
     }
     date = today();
     var query = {
-        text: 'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation) VALUES($1, $2, $3, $4)',
-        values: [body.nom, body.email, body.adresse, date],
+        text: body.client == false?'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation, client) VALUES($1, $2, $3, $4, false)':'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation, client) VALUES($1, $2, $3, $4,$5)',
+        values: body.client == false?[body.nom, body.email, body.adresse, date, false]:[body.nom, body.email, body.adresse, date, body.client],
     };
     client.query(query, (err, res) => {
         if (err) {
@@ -25,6 +25,30 @@ function save(body, http_response) {
             status = 'SUCCES';
         }
         http_response.send({status: status});
+        
+      });
+}
+
+function update(body, http_response) {
+    
+    var status = 'ECHEC';
+    if (err_connnection) {
+        http_response.send({status:status, data: body});
+    }
+    date = today();
+    var query = {
+        text: 'UPDATE '+ tableName + ' SET client = $1 WHERE id = $2',
+        values: [body.client, body.idmar]
+    };
+    client.query(query, (err, res) => {
+        if (err) {
+            custom_log('[QUERY OUT][' + tableName + ']',  'Update Fail, cause: ' + err);
+        } else {
+            custom_log('[QUERY OUT][' + tableName + ']', 'Update at ' + date + ', ' + body.nom +'/' +body.email);
+            status = 'SUCCES';
+            body.client=true;
+        }
+        http_response.send({status: status, data:body});
         
       });
 }
@@ -119,6 +143,7 @@ module.exports = {
     findAll,
     findById,
     findByAnyParam,
-    findByOther
+    findByOther,
+    update
 };
 
