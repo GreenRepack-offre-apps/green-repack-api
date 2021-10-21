@@ -14,6 +14,7 @@ route.post('/create', (req, res) => {
 });
 route.post('/update', (req, res) => {
     console.log('[API][Marchand] => updating  marchand ');
+    console.log("Body marchand "+JSON.stringify(req.body));
     update(req.body, res);
 });
 

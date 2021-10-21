@@ -7,15 +7,15 @@ var tableName = db_config.tables.marchand;
 
 //ex: VALUES ('e-electronics', 'e@email.com', 'motdepasse', '2021-07-24')
 function save(body, http_response) {
-    
+    custom_log('[REQ BODY]',JSON.stringify(body)); 
     var status = 'ECHEC';
     if (err_connnection) {
         http_response.send({status:status});
     }
     date = today();
     var query = {
-        text: body.client == false?'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation, client) VALUES($1, $2, $3, $4, false)':'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation, client) VALUES($1, $2, $3, $4,$5)',
-        values: body.client == false?[body.nom, body.email, body.adresse, date, false]:[body.nom, body.email, body.adresse, date, body.client],
+        text: 'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation, client) VALUES($1, $2, $3, $4, $5)',
+        values: [body.nom, body.email, body.adresse, date, body.client]
     };
     client.query(query, (err, res) => {
         if (err) {
@@ -37,7 +37,7 @@ function update(body, http_response) {
     }
     date = today();
     var query = {
-        text: 'UPDATE '+ tableName + ' SET client = $1 WHERE id = $2',
+        text: 'UPDATE '+ tableName + ' SET client = $1 WHERE idmar = $2',
         values: [body.client, body.idmar]
     };
     client.query(query, (err, res) => {
@@ -89,6 +89,7 @@ function findById(id, http_response) {
         } else {
             custom_log('[QUERY OUT][' + tableName + ']', 'Select at ' + todayWithHours() + ', ' +res.rows[0]);
             val = res.rows[0];
+            console.log("marchand found = "+JSON.stringify(val));
         }
         http_response.send({rechParam: 'ID', value: val});
     });
