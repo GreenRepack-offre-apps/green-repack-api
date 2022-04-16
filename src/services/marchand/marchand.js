@@ -14,7 +14,7 @@ function save(body, http_response) {
     }
     date = today();
     var query = {
-        text: 'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation, client) VALUES($1, $2, $3, $4, $5)',
+        text: 'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation, isclient) VALUES($1, $2, $3, $4, $5)',
         values: [body.nom, body.email, body.adresse, date, body.client]
     };
     client.query(query, (err, res) => {
@@ -37,7 +37,7 @@ function update(body, http_response) {
     }
     date = today();
     var query = {
-        text: 'UPDATE '+ tableName + ' SET client = $1 WHERE idmar = $2',
+        text: 'UPDATE '+ tableName + ' SET isclient = $1 WHERE idmar = $2',
         values: [body.client, body.idmar]
     };
     client.query(query, (err, res) => {

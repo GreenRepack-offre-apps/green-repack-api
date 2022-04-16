@@ -41,18 +41,25 @@ app.use('/api'+ local_config.routes.association, associationRoute);
 var paiementsRoute = require('./src/routes/paiement/transaction');
 app.use('/paiement', paiementsRoute);
 
-app.get('/paiement/init', (req, res) => {
-  if(req.query.marchand) {
-    res.redirect('../check.html?user='+req.query.marchand);
-  } else if(req.query.client) {
-    res.redirect('../check.html?user='+req.query.client);
-  }
+// app.get('/paiement/init', (req, res) => {
+//   if(req.query.marchand) {
+//     res.redirect('../check.html?user='+req.query.marchand);
+//   } else if(req.query.client) {
+//     res.redirect('../check.html?user='+req.query.client);
+//   }
     
   //   res.render('../check', {
   //     amount: 14,
   //     content: "Paiement du produit"
   //   });
-});
+// });
+var dict = {a: 1, b: 2, c: 3}; 
+for([key, val] of Object.entries(dict)) {
+  console.log(key, val);
+}
+for(v of Object.values(dict)) {
+  console.log(v);
+}
 app.listen(port, () => {
     console.log('[API] => Green-Repack app listening at http://localhost:'.concat(port));
 });

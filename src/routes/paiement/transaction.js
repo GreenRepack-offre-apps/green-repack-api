@@ -7,11 +7,7 @@ var route = express.Router();
 route.use(express.static("src/paybox"));
 //route.use(express.json());
 
-var calculateOrderAmount = (items) => {
-  // Replace this constant with a calculation of the order's amount
-  // Calculate the order total on the server to prevent
-  // people from directly manipulating the amount on the client
-  var amount = 14;
+var calculateOrderAmount = (amount) => {
   return amount * 10;
 };
 /**
@@ -19,9 +15,14 @@ var calculateOrderAmount = (items) => {
  */
 route.post("/gestion/to/marchand", async (req, res) => {
   var { items } = req.body;
+  // {marchand_id, marchand_mail, amount}
+  //req.body = 
+  //get from db = {marchand_mail, amount, product_} 
+  
+  var amount = 14;
   // Create a PaymentIntent with the order amount and currency
   var paymentIntent = await stripe.paymentIntents.create({
-    amount: calculateOrderAmount(items),
+    amount: calculateOrderAmount(amount),
     currency: "eur"
   });
 

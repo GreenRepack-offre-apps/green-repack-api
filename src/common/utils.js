@@ -11,9 +11,9 @@ var GLOBAL_ROUTES = {
 };
 
 var DB_TABLE = {
-    marchand: 'marchand',
-    client:'client',
-    produit:'produit',
+    marchand: 'users',
+    client:'users',
+    produit:'produit_marchand',
     commande:'commande',
     association:'association',
     projets:'projets'

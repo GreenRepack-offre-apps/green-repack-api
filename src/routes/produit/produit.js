@@ -1,39 +1,55 @@
 var express = require('express');
-const { selectProducts, selectAllProducts, saveProduct, updateProductState, selectOneProduct } = require('../../services/produit/produit');
+const { selectProduitsMarchand, save, update } = require('../../services/produit/produit-marchands');
+const { rechParamModel }= require('../../models/models');
 var route = express.Router();
 
 
-route.post('/add', (req, res) => {
-    saveProduct(req.body, res);
+route.post('/add', async(req, res) => {
+    await save(req.body, res);
+    res.send(await selectProduitsMarchand(null));
 });
 
-route.get('/list', (req, res) => {
-    if(req.query.etat_dem){
-        selectAllProducts(req.query.etat_dem, res);
+route.get('/list', async(req, res) => {
+    var rep = null;
+    if(req.query.statut_validation){
+        const params = {statut_validation:req.query.statut_validation};
+        rep = await selectProduitsMarchand(params);
     }else{
-        selectAllProducts(null, res);
+        rep = await selectProduitsMarchand(null);
     }
+    res.send(rep);
 });
 
-route.get('/user/list', (req, res) => {
-    if(req.query.email_user){
-        if(req.query.etat_dem){
-            selectProducts(req.query.email_user, req.query.etat_dem, res);
+route.get('/user/list', async(req, res) => {
+    var rep = null;
+    if(req.query.refmar){
+        var param = null;
+        if(req.query.statut_validation){
+            params = {
+                refmar: req.query.refmar,
+                statut_validation:req.query.statut_validation
+            };
         }else{
-            selectProducts(req.query.email_user, null, res);
+            params = {
+                refmar: req.query.refmar
+            };
         }
+        
+        rep = await selectProduitsMarchand(params);
     }
+    res.send(rep);
 });
 
 
-
-route.get('/get', (req, res) => {
+route.get('/get', async(req, res) => {
     if(req.query.idprod){
-        selectOneProduct(req.query.idprod, res);
+        rep = await selectProduitsMarchand({idprod:req.query.idprod});
+        res.send({status:rep.status, data: rep.data.lenght !== 0?rep.data[0]: null});
     }
 });
 
-route.post('/update', (req, res) => {
-    updateProductState(req.body, res);
+route.post('/update', async(req, res) => {
+    await update(req.body, res);
+    res.send(await selectProduitsMarchand(null));
 });
 module.exports = route;
