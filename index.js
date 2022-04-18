@@ -26,11 +26,11 @@ app.get('/', (req, res) => {
     res.send({app:{name:local_config.app}});
 });
 
-var marchanRoute = require('./src/routes/marchand/marchand');
-app.use('/api'+ local_config.routes.marchand, marchanRoute);
+var userRoute = require('./src/routes/users/users');
+app.use('/api'+ local_config.routes.users, userRoute);
 
-var clientRoute = require('./src/routes/client/client');
-app.use('/api'+ local_config.routes.client, clientRoute);
+// var clientRoute = require('./src/routes/client/client');
+// app.use('/api'+ local_config.routes.client, clientRoute);
 
 var produitRoute = require('./src/routes/produit/produit');
 app.use('/api'+ local_config.routes.produit, produitRoute);
@@ -53,13 +53,13 @@ app.use('/paiement', paiementsRoute);
   //     content: "Paiement du produit"
   //   });
 // });
-var dict = {a: 1, b: 2, c: 3}; 
-for([key, val] of Object.entries(dict)) {
-  console.log(key, val);
-}
-for(v of Object.values(dict)) {
-  console.log(v);
-}
+// var dict = {a: 1, b: 2, c: 3}; 
+// for([key, val] of Object.entries(dict)) {
+//   console.log(key, val);
+// }
+// for(v of Object.values(dict)) {
+//   console.log(v);
+// }
 app.listen(port, () => {
     console.log('[API] => Green-Repack app listening at http://localhost:'.concat(port));
 });

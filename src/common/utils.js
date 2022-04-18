@@ -3,8 +3,7 @@ var dateFormat = require('dateformat');
 
 var APPNAME = "Green Repack";
 var GLOBAL_ROUTES = {
-    marchand: '/marchand',
-    client:'/client',
+    users: '/users',
     produit:'/produit',
     commande:'/commande',
     association: '/association'
