@@ -15,7 +15,7 @@ function save(body) {
         if (err_connnection) {
             reject({status:status});
         }else if(!body.user_email) {
-            reject({status:status});
+            resolve({status:status});
             return;
         }
         
@@ -24,7 +24,7 @@ function save(body) {
     
         var query = {
             text: 'INSERT INTO '+ tableName + '(refmar, date_ajout, date_fin, statut_validation, marque, model, categorie, info_tech, info_esth) '+ 
-            'VALUES((Select idmar FROM '+ tableNameRef + ' WHERE email = $1), $2, $3, $4, $5, $6, $7, $8, $9) RETURNING idprod, date_ajout',
+            'VALUES((Select iduser FROM '+ tableNameRef + ' WHERE email = $1), $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
             values: [body.user_email, date, date, statut_validation, body.marque, body.model, body.categorie, body.info_tech, body.info_esth]
         };
         custom_log('[QUERY]', query.text);
@@ -32,14 +32,13 @@ function save(body) {
             var d = null;
             if (err) {
                 custom_log('[QUERY OUT][' + tableName + ']',  'Insert Fail, cause: ' + err);
-                reject({status:status});
+                resolve({status:status});
             } else {
                 custom_log('[QUERY OUT][' + tableName + ']', 'Insert at ' + date + ', ' + body.user_email);
-                console.log('produit => '+ JSON.stringify(res));
-                idprod = res.rows[0].idprod;
+                console.log('produit => '+ JSON.stringify(res.rows));
                 status = 'SUCCES';
-                d = res.rows[0].date_ajout;
-                resolve({status:status, id:idprod, date: d});
+                data = res.rows[0];
+                resolve({status:status, data: data});
             }
             
         });   

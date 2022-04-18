@@ -5,8 +5,11 @@ var route = express.Router();
 
 
 route.post('/add', async(req, res) => {
-    await save(req.body, res);
-    res.send(await selectProduitsMarchand(null));
+    var rep = null;
+    await save(req.body).then(rst => rep = rst);
+    //await selectProduitsMarchand(null)
+    console.log("??? get reponse: "+ JSON.stringify(rep));
+    res.send(rep);
 });
 
 route.get('/list', async(req, res) => {

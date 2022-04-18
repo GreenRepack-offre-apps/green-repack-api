@@ -15,7 +15,7 @@ function save(body) {
            resolve({status:status});
         }
         date = today();
-        var vals = [body.nom, body.email, body.adresse, date, body.client, body.marchand];
+        var vals = [body.nom, body.email, body.adresse, date, body.isclient, body.ismarchand];
 
         var str = 'INSERT INTO '+ tableName + '(nom, email, adresse, datecreation, isclient, ismarchand ) VALUES($1, $2, $3, $4, $5, $6)'
 
@@ -53,20 +53,21 @@ function update(body, param) {
             i++;
         });
         var vals =  bodyPayload.values;
-        vals.push(param.idmar);
+        vals.push(param);
         var query = {
-            text: str + ' WHERE idmar = $'+i+ ' RETURNING *',
+            text: str + ' WHERE iduser = $'+i+ ' RETURNING *',
             values: vals
         };
+        custom_log('[QUERY][' + tableName + ']', query.text + ' / ' + JSON.stringify(query.values))
         client.query(query, (err, res) => {
             if (err) {
                 custom_log('[QUERY OUT][' + tableName + ']',  'Update Fail, cause: ' + err);
+                resolve({status: status});
             } else {
-                custom_log('[QUERY OUT][' + tableName + ']', 'Update at ' + date + ', new user = ' + JSON.stringify( res.rows));
-                status = 'SUCCES';
-                body.client=true;
+                custom_log('[QUERY OUT][' + tableName + ']', 'Update at ' + date + ', new user = ' + JSON.stringify(res));
+                status = 'SUCCES';           
+                resolve({status: status, data: res.rows[0]});
             }
-            resolve({status: status, data: res.rows[0]});
           });
     });
 
